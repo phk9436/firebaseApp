@@ -4,13 +4,21 @@ import { getAuth } from "firebase/auth";
 import Router from "./Router";
 
 function App() {
+  const [init, setInit] = useState(false);
+  const [isLogged, setIsLogged] = useState(false);
   const auth= getAuth();
-  console.log(auth.currentUser)
-  const [isLogged, setIsLogged] = useState(auth.currentUser);
+  
+  useEffect(() => {
+    auth.onAuthStateChanged(user => { //user값이 변화하는 것을 감지
+      user ? setIsLogged(true) : setIsLogged(false);
+      setInit(true);
+    });
+  }, [])
+  
   return (
     <>
-     <Router isLogged={isLogged}/>
-     <footer>&copy; Nwitter {new Date().getFullYear()}</footer>
+      {init && <Router isLogged={isLogged}/>}
+      <footer>&copy; Nwitter {new Date().getFullYear()}</footer>
     </>
   );
 }
