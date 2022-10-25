@@ -1,11 +1,17 @@
-import React from "react";
-import {firebaseApp} from "../firebase";
+import React, {useState, useEffect} from "react";
+import firebase, {firebaseApp} from "../firebase";
+import { getAuth } from "firebase/auth";
 import Router from "./Router";
-console.log(firebaseApp)
 
 function App() {
+  const auth= getAuth();
+  console.log(auth.currentUser)
+  const [isLogged, setIsLogged] = useState(auth.currentUser);
   return (
-    <Router/>
+    <>
+     <Router isLogged={isLogged}/>
+     <footer>&copy; Nwitter {new Date().getFullYear()}</footer>
+    </>
   );
 }
 

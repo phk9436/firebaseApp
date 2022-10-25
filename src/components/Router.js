@@ -5,8 +5,7 @@ import Auth from '../routes/Auth';
 import Home from '../routes/Home';
 //  import Profile from "../routes/Profile";
 
-function Router () {
-  const [isLogged, setisLogged] = useState(false);
+function Router ({isLogged}) {
     return (
         <BrowserRouter>
             <Routes>
