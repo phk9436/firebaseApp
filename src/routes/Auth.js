@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, GithubAuthProvider, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { async } from '@firebase/util';
 
 function Auth() {
   const [email, setEmail] = useState('');
@@ -33,6 +34,22 @@ function Auth() {
     setError(false);
   }
 
+  const onSocialClick = async(e) => {
+    let provider;
+    try{
+      if(e.target.name === "google") {
+        provider = new GoogleAuthProvider();
+      } else if(e.target.name === "github")  {
+        provider = new GithubAuthProvider();
+      }
+      const data = await signInWithPopup(getAuth(), provider);
+      console.log(data);
+    } catch(err) {
+      console.log(err);
+    }
+    
+  }
+
   return (
     <div>
       <h1>{newAccount ? "회원가입" : "로그인"}</h1>
@@ -42,8 +59,8 @@ function Auth() {
         <button type="submit">{newAccount ? 'Create Account' : 'LogIn'}</button>
       </form>
       <div>
-        <button>Continue with Github</button>
-        <button>Continue with Google</button>
+        <button name="github" onClick={onSocialClick}>{newAccount ? 'SignUp' : 'Continue'} with Github</button>
+        <button name="google" onClick={onSocialClick}>{newAccount ? 'SignUp' : 'Continue'} with Google</button>
       </div>
       <button onClick={toggleAccount}>{newAccount ? "로그인창으로" : "회원가입창으로"}</button>
       {error && <p>{error}</p>}
