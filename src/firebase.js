@@ -1,5 +1,5 @@
 import * as firebase from "firebase/app";
-import "firebase/compat/firestore";
+import {getFirestore} from 'firebase/firestore'
 import "firebase/compat/storage";
 
 const {initializeApp} = firebase;
@@ -14,4 +14,5 @@ const firebaseConfig = {
   };
 
   export const firebaseApp = initializeApp(firebaseConfig);
+  export const dbService = getFirestore();
   export default firebase;
