@@ -1,36 +1,36 @@
 import { async } from '@firebase/util';
-import { addDoc, collection, serverTimestamp, getDocs, query } from 'firebase/firestore';
+import { addDoc, collection, serverTimestamp, getDocs, query,  onSnapshot, orderBy} from 'firebase/firestore';
 import React, {useEffect, useState} from 'react';
 import { dbService } from '../firebase';
 
-function Home() {
+function Home({userObj}) {
   const [nweet, setNweet] = useState("");
   const [nweetLi, setNweetLi] = useState([]);
-  const [isSubmit, setIsSubmit] = useState(false);
-  const getNweets = async() => {
-    setNweetLi([]);
-    const queryList = await getDocs(query(collection(dbService, "nweets")));
-    queryList.forEach((docs) => {
-      const nweetObj = {...docs.data() , id:docs.id}
-      setNweetLi(prev => [nweetObj, ...prev])
-    })
+  const getNweets = () => {
+    const queryList = query(collection(dbService, "nweets"), orderBy("createAt"));
+    onSnapshot(queryList, (snapshot) => {
+      const nweetObj = snapshot.docs.map((docs) => ({
+          ...docs.data(),
+          id : docs.id
+      }));
+      setNweetLi(nweetObj)
+    });
   }
   useEffect(()=> {
     getNweets();
-  }, [isSubmit])
+  }, [])
   const onSubmit = async(e) => {
     e.preventDefault();
     try{
       const docRef = await addDoc(collection(dbService, "nweets"), {
-        nweet,
-        createAt : serverTimestamp()
+        text : nweet,
+        createAt : serverTimestamp(),
+        userId : userObj.uid
       });
       setNweet("");
-      console.log(docRef)
     } catch(err) {
       console.log(err.message);
     }
-    setIsSubmit((prev) => !prev);
   }
   const onChange = (e) => {
     setNweet(e.target.value)
@@ -43,7 +43,7 @@ function Home() {
         <div>
           {nweetLi.map((el) => {
             return (
-            <h4 key={el.id}>{el.nweet}</h4>
+            <h4 key={el.id}>{el.text}</h4>
             )
           })}
         </div>
