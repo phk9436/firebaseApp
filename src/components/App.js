@@ -17,8 +17,9 @@ function App() {
   
   return (
     <>
-      {init ? <Router isLogged={Boolean(userObj)} userObj={userObj}/> : <h1>Loadding...</h1>}
-      <footer style={{width: 'fit-content', margin: '40px auto'}}>&copy; Nwitter {new Date().getFullYear()}</footer>
+      {init ? 
+      <Router isLogged={Boolean(userObj)} userObj={userObj}/> : 
+      <h1>Loadding...</h1>}
     </>
   );
 }
