@@ -32,8 +32,8 @@ function Home({userObj}) {
       
       try{
         if(attach !== ""){
-          const fileRef = ref(storageService, `${userObj.uid}/${v4()}`); //올릴 스토리지, 올릴 경로 지정
-          const res = await uploadString(fileRef, attach, "data_url"); //string형태로 post시킨 후 respond 반환
+          const fileRef = ref(storageService, `${userObj.uid}/${v4()}`); //올릴 스토리지, 올릴 경로
+          const res = await uploadString(fileRef, attach, "data_url"); //string형태로 post시킨 후 respond 반환(스토리지레퍼런스(여기에 올려라), 올릴 파일, 메타형식)
           attachmentUrl = await getDownloadURL(res.ref) //반환된 레퍼런스를 다운로드 가능한 url로 반환
         }
 

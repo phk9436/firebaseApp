@@ -1,19 +1,20 @@
 import React, {useState} from 'react';
 import { dbService } from '../firebase';
 import { doc, deleteDoc, updateDoc } from 'firebase/firestore';
+import { deleteObject, ref} from 'firebase/storage';
+import { storageService } from '../firebase';
 
 function Nweet({nweetObj, isOwner}) {
     const [editing, setEditing] = useState(false);
     const [newNweet, setNewNweet] = useState(nweetObj.text);
     const NweetRef = doc(dbService, 'nweets', `${nweetObj.id}`); //지울 쿼리의 레퍼런스를 가져옴. 파이어스토어, 콜렉션, dbID
     const Delete = async() => {
-        const ok = window.confirm('Are you sure to delete?');
-        if(ok) await deleteDoc(NweetRef);
+        await deleteDoc(NweetRef);
+        if(nweetObj.attachmentUrl) await deleteObject(ref(storageService, nweetObj.attachmentUrl));
     }
     const Edit = async(e) => {
         e.preventDefault();
-        const ok = window.confirm('Are you sute to edit?');
-        if(ok) await updateDoc(NweetRef, {text : newNweet});
+        await updateDoc(NweetRef, {text : newNweet});
         setEditing(false);
     }
     const toggleEditing = () => setEditing(prev => !prev);
