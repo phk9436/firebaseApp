@@ -57,9 +57,12 @@ function Home({userObj}) {
 
   const FileChange = (e) => {
     const files = e.target.files;
-    const reader = new FileReader();
-    reader.readAsDataURL(files[0]);
-    reader.onloadend = (result) => setAttach(result.currentTarget.result);
+    if(files.length > 0){
+      const reader = new FileReader();
+      reader.readAsDataURL(files[0]);
+      reader.onloadend = (result) => setAttach(result.currentTarget.result);
+    }
+    
   }
   
   const ClearFile = () => setAttach("")

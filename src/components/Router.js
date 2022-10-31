@@ -9,12 +9,12 @@ import Navi from './Navi';
 function Router ({isLogged, userObj}) {
     return (
         <BrowserRouter>
-            {isLogged && <Navi></Navi>}
+            {isLogged && <Navi/>}
             <Routes>
                 { isLogged ? (
                  <>
                   <Route path='/' element={<Home userObj={userObj}/>}/>
-                  <Route path='/profile' element={<Profile/>}/>
+                  <Route path='/profile' element={<Profile userObj={userObj}/>}/>
                  </>
                 ) : (
                 <Route path='/' element={<Auth/>}/>

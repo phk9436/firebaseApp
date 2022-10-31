@@ -7,10 +7,9 @@ function App() {
   const [init, setInit] = useState(false);
   const [userObj, setUserObj] = useState(null);
   const auth= getAuth();
-
   useEffect(() => {
     auth.onAuthStateChanged(user => { //user값이 변화하는 것을 감지
-      if(user) setUserObj(user);
+      user ? setUserObj(user) : setUserObj(null);
       setInit(true);
     });
   }, [])
