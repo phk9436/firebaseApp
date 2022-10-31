@@ -1,13 +1,14 @@
-import { async } from '@firebase/util';
-import { addDoc, collection, serverTimestamp, getDocs, query,  onSnapshot, orderBy} from 'firebase/firestore';
+import { addDoc, collection, serverTimestamp, query,  onSnapshot, orderBy} from 'firebase/firestore';
 import React, {useEffect, useState} from 'react';
-import { dbService } from '../firebase';
+import { dbService, storageService } from '../firebase';
 import Nweet from '../components/Nweet';
+import { ref, uploadString, getDownloadURL} from 'firebase/storage';
+import {v4} from 'uuid';
 
 function Home({userObj}) {
   const [nweet, setNweet] = useState("");
   const [nweetLi, setNweetLi] = useState([]);
-  const [attach, setAttach] = useState(null);
+  const [attach, setAttach] = useState("");
 
   const getNweets = () => {
     const queryList = query(collection(dbService, "nweets"), orderBy("createAt"));
@@ -26,14 +27,26 @@ function Home({userObj}) {
 
   const onSubmit = async(e) => {
     e.preventDefault();
+    let attachmentUrl = "";
     if(nweet){
+      
       try{
+        if(attach !== ""){
+          const fileRef = ref(storageService, `${userObj.uid}/${v4()}`); //올릴 스토리지, 올릴 경로 지정
+          const res = await uploadString(fileRef, attach, "data_url"); //string형태로 post시킨 후 respond 반환
+          attachmentUrl = await getDownloadURL(res.ref) //반환된 레퍼런스를 다운로드 가능한 url로 반환
+        }
+
         await addDoc(collection(dbService, "nweets"), {
           text : nweet,
           createAt : serverTimestamp(),
-          userId : userObj.uid
+          userId : userObj.uid,
+          attachmentUrl
         });
+
         setNweet("");
+        setAttach("");
+        
       } catch(err) {
         console.log(err.message);
       }
@@ -49,7 +62,7 @@ function Home({userObj}) {
     reader.onloadend = (result) => setAttach(result.currentTarget.result);
   }
   
-  const ClearFile = () => setAttach(null)
+  const ClearFile = () => setAttach("")
   return (
     <div>
       <form action="" onSubmit={onSubmit}>

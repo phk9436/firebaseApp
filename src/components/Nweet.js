@@ -29,6 +29,10 @@ function Nweet({nweetObj, isOwner}) {
         </>
         : <h4>{nweetObj.text}</h4>
         }
+        {nweetObj.attachmentUrl && 
+        <>
+        <img src={nweetObj.attachmentUrl} style={{width: '100px', height: '100px', objectFit: 'cover'}}/>
+        <br/></>}
         {isOwner && 
         <>
             <button onClick={Delete} type='button'>Delete</button>
