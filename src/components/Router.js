@@ -6,7 +6,7 @@ import Home from '../routes/Home';
 import Profile from "../routes/Profile";
 import Navi from './Navi';
 
-function Router ({isLogged, userObj}) {
+function Router ({isLogged, userObj, refreshUser}) {
     return (
         <BrowserRouter>
             {isLogged && <Navi/>}
@@ -14,7 +14,7 @@ function Router ({isLogged, userObj}) {
                 { isLogged ? (
                  <>
                   <Route path='/' element={<Home userObj={userObj}/>}/>
-                  <Route path='/profile' element={<Profile userObj={userObj}/>}/>
+                  <Route path='/profile' element={<Profile userObj={userObj} refreshUser={refreshUser}/>}/>
                  </>
                 ) : (
                 <Route path='/' element={<Auth/>}/>
