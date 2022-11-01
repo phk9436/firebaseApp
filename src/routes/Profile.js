@@ -1,37 +1,47 @@
-import React, { useEffect, useState } from 'react';
-import { getAuth, updateProfile } from 'firebase/auth';
-import { dbService } from '../firebase';
-import { query, collection, where, getDocs, orderBy } from 'firebase/firestore';
+import React, { useEffect, useState } from "react";
+import { getAuth, updateProfile } from "firebase/auth";
+import { dbService } from "../firebase";
+import { query, collection, where, getDocs, orderBy } from "firebase/firestore";
+import { useRecoilState } from "recoil";
+import { nameUpdated } from "../atoms";
 
-function Profile({ userObj, refreshUser }) {
+function Profile({ userObj }) {
   const [nweetLi, setNweetLi] = useState([]);
   const [isupdate, setIsupdate] = useState(false);
-  const [changeName, setChangeName] = useState('');
+  const [changeName, setChangeName] = useState("");
+  const [isNameUpdated, setIsNameUpdated] = useRecoilState(nameUpdated);
 
   useEffect(() => {
     getMyNweets();
   }, []);
 
-  const getMyNweets = async() => {
+  const getMyNweets = async () => {
     setNweetLi([]);
-    const nweets = query(collection(dbService, 'nweets'), where('userId', "==", userObj.uid), orderBy('createAt')); //전자 중에서 후자와 일치하는 것을 골라라
+    const nweets = query(
+      collection(dbService, "nweets"),
+      where("userId", "==", userObj.uid),
+      orderBy("createAt")
+    ); //전자 중에서 후자와 일치하는 것을 골라라
     const queryDocs = await getDocs(nweets); //쿼리 안의 데이터들을 가져옴
-    queryDocs.forEach( doc =>{
-      const nweetObj = {...doc.data(), id:doc.id}
-      setNweetLi(prev => [nweetObj, ...prev])
+    queryDocs.forEach((doc) => {
+      const nweetObj = { ...doc.data(), id: doc.id };
+      setNweetLi((prev) => [nweetObj, ...prev]);
     });
-  }
-  
-  const onSubmit = async(e) => {
+  };
+
+  const UpdateUserName = () => setIsNameUpdated((props) => !props);
+
+  const onSubmit = async (e) => {
     e.preventDefault();
-    if(!isupdate) {
-      if(userObj.displayName !== changeName){
-        await updateProfile(getAuth().currentUser, {displayName : changeName});
-        refreshUser();
+    if (!isupdate) {
+      if (userObj.displayName !== changeName) {
+        await updateProfile(getAuth().currentUser, { displayName: changeName });
+        UpdateUserName();
+        console.log(userObj.displayName);
       }
-    setChangeName('');
+      setChangeName("");
     }
-  }
+  };
 
   const onButtonClick = () => setIsupdate(!isupdate);
 
@@ -40,21 +50,30 @@ function Profile({ userObj, refreshUser }) {
     <div>
       <form action="" onSubmit={onSubmit}>
         <h3>{`${userObj.displayName}님, 안녕하세요`}</h3>
-        {isupdate && <input type="text" value={changeName} onChange={onchangeName} />}
-        <button type='submit' onClick={onButtonClick}>닉네임 변경</button>
+        {isupdate && (
+          <input type="text" value={changeName} onChange={onchangeName} />
+        )}
+        <button type="submit" onClick={onButtonClick}>
+          닉네임 변경
+        </button>
       </form>
-      
-      
-      {nweetLi.map((el)=> {
+
+      {nweetLi.map((el) => {
         return (
           <div key={el.id}>
-          <h4>{el.text}</h4>
-          {el.attachmentUrl && <img src={el.attachmentUrl} alt="" style={{width: '100px', height: '100px', objectFit: 'cover'}}/>}
+            <h4>{el.text}</h4>
+            {el.attachmentUrl && (
+              <img
+                src={el.attachmentUrl}
+                alt=""
+                style={{ width: "100px", height: "100px", objectFit: "cover" }}
+              />
+            )}
           </div>
-        )
+        );
       })}
     </div>
   );
 }
 
-export default Profile
+export default Profile;
